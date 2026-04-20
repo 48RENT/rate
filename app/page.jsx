@@ -10,7 +10,7 @@ const cameras = [
   { name: "FUJI X-T100", firstDay: 400, nextDay: 190, image: "/xt100.jpg" },
   { name: "FUJI X-A5", firstDay: 350, nextDay: 190, image: "/xa5.jpg" },
   { name: "FUJI X-A3", firstDay: 300, nextDay: 150, image: "/xa3.jpg" },
-  { name: "SONY A5100", firstDay: 350, nextDay: 190, image: "/a5100.jpg" },
+  { name: "SONY A5100", firstDay: 350, nextDay: 190, image: "/a5100.jpg" },5
   { name: "Canon M10", firstDay: 350, nextDay: 190, image: "/canonm10.jpg" },
 ];
 
