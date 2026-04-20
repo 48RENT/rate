@@ -171,7 +171,19 @@ export default function Page() {
               <p style={{ color: "#666" }}>* ค่าประกันแสดงแยก ไม่รวมในยอดค่าเช่า</p>
 
               <a
-                href="https://line.me/R/ti/p/@48rent"
+                href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
+                  `สนใจเช่ากล้อง\n\n` +
+                  `รุ่น: ${selected.name}\n` +
+                  `เลนส์เสริม: ${selectedLens || "ไม่มี"}\n` +
+                  `วันรับ: ${startDate || "-"}\n` +
+                  `วันคืน: ${endDate || "-"}\n` +
+                  `จำนวนวันเช่า: ${rentalDays} วัน\n` +
+                  `ค่ากล้อง: ${cameraPrice} บาท\n` +
+                  `ค่าเลนส์เสริม: ${lensPrice} บาท\n` +
+                  `ค่านอกเวลา: ${extraPrice} บาท\n` +
+                  `ค่าประกัน: ${insurance} บาท\n` +
+                  `ยอดรวมค่าเช่า: ${total} บาท`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -184,7 +196,7 @@ export default function Page() {
                   textDecoration: "none"
                 }}
               >
-                ทัก LINE เพื่อจอง
+                ส่งสรุปเข้า LINE เพื่อจอง
               </a>
 
               <p style={{ marginTop: 10 }}>
