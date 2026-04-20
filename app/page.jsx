@@ -1,110 +1,118 @@
+"use client";
+import { useState } from "react";
+
+const cameras = [
+  { name: "Ricoh GR IIIx", firstDay: 600, nextDay: 390, image: "/ricohgriiix.jpg" },
+  { name: "DJI Pocket 3", firstDay: 500, nextDay: 290, image: "/pocket3.jpg" },
+  { name: "FUJI X-A7", firstDay: 400, nextDay: 190, image: "/xa7.jpg" },
+  { name: "GoPro 13 Black", firstDay: 500, nextDay: 290, image: "/gopro13.jpg" },
+  { name: "FUJI X-T200", firstDay: 450, nextDay: 190, image: "/xt200.jpg" },
+  { name: "FUJI X-T100", firstDay: 400, nextDay: 190, image: "/xt100.jpg" },
+  { name: "FUJI X-A5", firstDay: 350, nextDay: 190, image: "/xa5.jpg" },
+  { name: "FUJI X-A3", firstDay: 300, nextDay: 150, image: "/xa3.jpg" },
+  { name: "SONY A5100", firstDay: 350, nextDay: 190, image: "/a5100.jpg" },
+  { name: "Canon M10", firstDay: 350, nextDay: 190, image: "/canonm10.jpg" },
+];
+
+function calcDays(start, end) {
+  if (!start || !end) return 0;
+  const s = new Date(start);
+  const e = new Date(end);
+  const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
+  return diff >= 0 ? diff + 1 : 0;
+}
+
 export default function Page() {
+  const [selected, setSelected] = useState(cameras[0]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [lensDays, setLensDays] = useState(0);
+  const [extraHours, setExtraHours] = useState(0);
+
+  const rentalDays = calcDays(startDate, endDate);
+  const cameraPrice = rentalDays > 0
+    ? selected.firstDay + Math.max(0, rentalDays - 1) * selected.nextDay
+    : 0;
+  const lensPrice = Number(lensDays || 0) * 200;
+  const extraPrice = Number(extraHours || 0) * 100;
+  const total = cameraPrice + lensPrice + extraPrice;
+
   return (
-    <main style={{
-      minHeight: '100vh',
-      background: '#f8f8f8',
-      fontFamily: 'Arial, sans-serif',
-      padding: '30px'
-    }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <h1 style={{ textAlign: 'center', fontSize: '32px', marginBottom: '10px' }}>
-          48RENT Camera Rental Calculator
-        </h1>
-
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: '30px' }}>
-          เลือกกล้อง • เลือกวันรับคืน • คำนวณค่าเช่าอัตโนมัติ
+    <main style={{ minHeight: "100vh", background: "#f8f8f8", padding: "30px", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        <h1 style={{ textAlign: "center", fontSize: 30 }}>48RENT Camera Rental Calculator</h1>
+        <p style={{ textAlign: "center", color: "#666" }}>
+          เลือกกล้อง • เลือกวันรับคืน • สรุปค่าเช่าอัตโนมัติ
         </p>
 
-        <p style={{ textAlign: 'center', color: '#888', marginBottom: '40px' }}>
-          เวลารับ-คืน 10:00 – 18:00 น. | นอกเวลา +100 บาท / ชั่วโมง
-        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 30 }}>
+          <div style={{ background: "#fff", padding: 24, borderRadius: 18 }}>
+            <h2>เลือกกล้อง</h2>
+            <select
+              value={selected.name}
+              onChange={(e) => setSelected(cameras.find(c => c.name === e.target.value))}
+              style={{ width: "100%", padding: 12, marginTop: 10, borderRadius: 10 }}
+            >
+              {cameras.map((cam) => (
+                <option key={cam.name} value={cam.name}>{cam.name}</option>
+              ))}
+            </select>
 
-        <section>
-          <h2 style={{ marginBottom: '20px' }}>รุ่นกล้องยอดนิยม</h2>
+            <img
+              src={selected.image}
+              alt={selected.name}
+              style={{ width: "100%", height: 280, objectFit: "contain", marginTop: 20 }}
+            />
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '20px'
-          }}>
-
-            {[
-              ['Ricoh GR IIIx', '/ricohgriiix.jpg', 'วันแรก 600 | วันต่อไป 390'],
-              ['DJI Pocket 3', '/pocket3.jpg', 'วันแรก 500 | วันต่อไป 290'],
-              ['FUJI X-A7', '/xa7.jpg', 'วันแรก 400 | วันต่อไป 190'],
-              ['GoPro 13', '/gopro13.jpg', 'วันแรก 500 | วันต่อไป 290'],
-              ['FUJI X-T200', '/xt200.jpg', 'วันแรก 450 | วันต่อไป 190'],
-              ['FUJI X-T100', '/xt100.jpg', 'วันแรก 400 | วันต่อไป 190'],
-              ['FUJI X-A5', '/xa5.jpg', 'วันแรก 350 | วันต่อไป 190'],
-              ['FUJI X-A3', '/xa3.jpg', 'วันแรก 300 | วันต่อไป 150'],
-              ['SONY A5100', '/a5100.jpg', 'วันแรก 350 | วันต่อไป 190'],
-              ['Canon M10', '/canonm10.jpg', 'วันแรก 350 | วันต่อไป 190'],
-            ].map((item) => (
-              <div key={item[0]} style={{
-                background: '#fff',
-                borderRadius: '16px',
-                padding: '16px',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
-                textAlign: 'center'
-              }}>
-                <img
-                  src={item[1]}
-                  alt={item[0]}
-                  style={{
-                    width: '100%',
-                    height: '180px',
-                    objectFit: 'contain',
-                    marginBottom: '12px'
-                  }}
-                />
-
-                <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>{item[0]}</h3>
-                <p style={{ color: '#555', fontSize: '14px' }}>{item[2]}</p>
-              </div>
-            ))}
+            <p>วันแรก: {selected.firstDay} บาท</p>
+            <p>วันต่อไป: {selected.nextDay} บาท</p>
           </div>
-        </section>
 
-        <section style={{
-          marginTop: '50px',
-          background: '#fff',
-          borderRadius: '20px',
-          padding: '30px',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-        }}>
-          <h2 style={{ marginBottom: '20px' }}>สรุปค่าเช่า</h2>
+          <div style={{ background: "#fff", padding: 24, borderRadius: 18 }}>
+            <h2>คำนวณค่าเช่า</h2>
 
-          <p style={{ marginBottom: '10px' }}>
-            * การนับวันเช่าคิดตรงวัน เช่น รับ 20 เม.ย. คืน 21 เม.ย. = 2 วัน
-          </p>
+            <label>วันรับ</label>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
 
-          <p style={{ marginBottom: '20px' }}>
-            ลูกค้าสามารถเลือกวันรับ / วันคืน / เลนส์เสริม / ชั่วโมงนอกเวลา
-            แล้วระบบจะคำนวณยอดรวมอัตโนมัติ
-          </p>
+            <label>วันคืน</label>
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
 
-          <a
-            href="https://line.me/R/ti/p/@48rent"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-block',
-              background: '#111',
-              color: '#fff',
-              padding: '14px 28px',
-              borderRadius: '12px',
-              textDecoration: 'none',
-              fontSize: '14px'
-            }}
-          >
-            ทัก LINE เพื่อจอง
-          </a>
+            <label>จำนวนวันเลนส์เสริม (วันละ 200)</label>
+            <input type="number" min="0" value={lensDays} onChange={(e) => setLensDays(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
 
-          <p style={{ marginTop: '15px', color: '#666', fontSize: '14px' }}>
-            กรุณาแคปหน้าสรุปราคา แล้วส่งใน LINE เพื่อจอง
-          </p>
-        </section>
+            <label>ชั่วโมงนอกเวลา (+100/ชม.)</label>
+            <input type="number" min="0" value={extraHours} onChange={(e) => setExtraHours(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
+
+            <hr style={{ margin: "20px 0" }} />
+            <p>จำนวนวันเช่า: <b>{rentalDays}</b> วัน</p>
+            <p>ค่ากล้อง: <b>{cameraPrice}</b> บาท</p>
+            <p>ค่าเลนส์: <b>{lensPrice}</b> บาท</p>
+            <p>ค่านอกเวลา: <b>{extraPrice}</b> บาท</p>
+            <h2>รวมทั้งหมด: {total} บาท</h2>
+
+            <a
+              href="https://line.me/R/ti/p/@48rent"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                marginTop: 20,
+                background: "#111",
+                color: "#fff",
+                padding: "14px 24px",
+                borderRadius: 12,
+                textDecoration: "none"
+              }}
+            >
+              ทัก LINE เพื่อจอง
+            </a>
+
+            <p style={{ marginTop: 12, fontSize: 14, color: "#666" }}>
+              กรุณาแคปหน้าสรุปราคา แล้วส่งใน LINE เพื่อจอง
+            </p>
+          </div>
+        </div>
       </div>
     </main>
-  )
+  );
 }
