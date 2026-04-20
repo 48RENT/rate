@@ -145,6 +145,10 @@ export default function Page() {
               style={{ width: "100%", padding: 10, marginTop: 10 }}
             />
 
+            <p style={{ marginTop: 12, color: "#444" }}>
+              กรุณาแจ้งจำนวนชั่วโมงหากต้องการรับหรือคืนนอกเวลาปกติ (เพิ่ม 100 บาท / ชั่วโมง)
+            </p>
+
             <input
               type="number"
               min="0"
