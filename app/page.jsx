@@ -2,17 +2,32 @@
 import { useState } from "react";
 
 const cameras = [
-  { name: "Ricoh GR IIIx", firstDay: 600, nextDay: 390, image: "/ricohgriiix.jpg" },
-  { name: "DJI Pocket 3", firstDay: 500, nextDay: 290, image: "/pocket3.jpg" },
-  { name: "FUJI X-A7", firstDay: 400, nextDay: 190, image: "/xa7.jpg" },
-  { name: "GoPro 13 Black", firstDay: 500, nextDay: 290, image: "/gopro13.jpg" },
-  { name: "FUJI X-T200", firstDay: 450, nextDay: 190, image: "/xt200.jpg" },
-  { name: "FUJI X-T100", firstDay: 400, nextDay: 190, image: "/xt100.jpg" },
-  { name: "FUJI X-A5", firstDay: 350, nextDay: 190, image: "/xa5.jpg" },
-  { name: "FUJI X-A3", firstDay: 300, nextDay: 150, image: "/xa3.jpg" },
-  { name: "SONY A5100", firstDay: 350, nextDay: 190, image: "/a5100.jpg" },
-  { name: "Canon M10", firstDay: 350, nextDay: 190, image: "/canonm10.jpg" },
+  { name: "Ricoh GR IIIx", firstDay: 600, nextDay: 390, image: "/ricohgriiix.jpg", type: "special", deposit: 3000 },
+  { name: "DJI Pocket 3", firstDay: 500, nextDay: 290, image: "/pocket3.jpg", type: "special", deposit: 3000 },
+  { name: "FUJI X-A7", firstDay: 400, nextDay: 190, image: "/xa7.jpg", type: "fuji", deposit: 1000 },
+  { name: "GoPro 13 Black", firstDay: 500, nextDay: 290, image: "/gopro13.jpg", type: "normal", deposit: 1000 },
+  { name: "FUJI X-T200", firstDay: 450, nextDay: 190, image: "/xt200.jpg", type: "fuji", deposit: 1000 },
+  { name: "FUJI X-T100", firstDay: 400, nextDay: 190, image: "/xt100.jpg", type: "fuji", deposit: 1000 },
+  { name: "FUJI X-A5", firstDay: 350, nextDay: 190, image: "/xa5.jpg", type: "fuji", deposit: 1000 },
+  { name: "FUJI X-A3", firstDay: 300, nextDay: 150, image: "/xa3.jpg", type: "fuji", deposit: 1000 },
+  { name: "SONY A5100", firstDay: 350, nextDay: 190, image: "/a5100.jpg", type: "sony", deposit: 1000 },
+  { name: "Canon M10", firstDay: 350, nextDay: 190, image: "/canonm10.jpg", type: "canon", deposit: 1000 },
 ];
+
+const lensMap = {
+  fuji: [
+    "35mm f1.4 — ละลายหลัง",
+    "18mm f2.0 — ถ่ายวิว",
+    "50-230mm — ซูมไกล",
+  ],
+  sony: [
+    "35mm f1.8 — ละลายหลังระยะใกล้",
+    "50mm f1.8 — ละลายหลังระยะไกล",
+  ],
+  canon: [
+    "22mm f2.0 — ละลายหลัง",
+  ],
+};
 
 function calcDays(start, end) {
   if (!start || !end) return 0;
@@ -23,95 +38,85 @@ function calcDays(start, end) {
 }
 
 export default function Page() {
-  const [selected, setSelected] = useState(cameras[0]);
+  const [selected, setSelected] = useState(null);
+  const [selectedLens, setSelectedLens] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [lensDays, setLensDays] = useState(0);
   const [extraHours, setExtraHours] = useState(0);
 
   const rentalDays = calcDays(startDate, endDate);
-  const cameraPrice = rentalDays > 0
+  const cameraPrice = selected && rentalDays > 0
     ? selected.firstDay + Math.max(0, rentalDays - 1) * selected.nextDay
     : 0;
-  const lensPrice = Number(lensDays || 0) * 200;
+  const lensPrice = selectedLens && rentalDays > 0 ? rentalDays * 200 : 0;
   const extraPrice = Number(extraHours || 0) * 100;
+  const insurance = selected ? (selectedLens ? Math.max(selected.deposit, 3000) : selected.deposit) : 0;
   const total = cameraPrice + lensPrice + extraPrice;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#f8f8f8", padding: "30px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <h1 style={{ textAlign: "center", fontSize: 30 }}>48RENT Camera Rental Calculator</h1>
-        <p style={{ textAlign: "center", color: "#666" }}>
-          เลือกกล้อง • เลือกวันรับคืน • สรุปค่าเช่าอัตโนมัติ
-        </p>
+    <main style={{ minHeight: "100vh", background: "#f8f8f8", padding: 20, fontFamily: "Arial, sans-serif" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <h1 style={{ textAlign: "center", fontSize: 28 }}>48RENT Camera Rental</h1>
+        <p style={{ textAlign: "center", color: "#666" }}>ราคาเฉพาะสมาชิกเท่านั้น</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 30 }}>
-          <div style={{ background: "#fff", padding: 24, borderRadius: 18 }}>
-            <h2>เลือกกล้อง</h2>
-            <select
-              value={selected.name}
-              onChange={(e) => setSelected(cameras.find(c => c.name === e.target.value))}
-              style={{ width: "100%", padding: 12, marginTop: 10, borderRadius: 10 }}
+        <h2 style={{ marginTop: 30 }}>1. เลือกรุ่นกล้อง</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
+          {cameras.map((cam) => (
+            <div
+              key={cam.name}
+              onClick={() => { setSelected(cam); setSelectedLens(""); }}
+              style={{ background: "#fff", padding: 16, borderRadius: 16, cursor: "pointer", border: selected?.name === cam.name ? "2px solid #111" : "1px solid #ddd" }}
             >
-              {cameras.map((cam) => (
-                <option key={cam.name} value={cam.name}>{cam.name}</option>
-              ))}
-            </select>
-
-            <img
-              src={selected.image}
-              alt={selected.name}
-              style={{ width: "100%", height: 280, objectFit: "contain", marginTop: 20 }}
-            />
-
-            <p>วันแรก: {selected.firstDay} บาท</p>
-            <p>วันต่อไป: {selected.nextDay} บาท</p>
-          </div>
-
-          <div style={{ background: "#fff", padding: 24, borderRadius: 18 }}>
-            <h2>คำนวณค่าเช่า</h2>
-
-            <label>วันรับ</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
-
-            <label>วันคืน</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
-
-            <label>จำนวนวันเลนส์เสริม (วันละ 200)</label>
-            <input type="number" min="0" value={lensDays} onChange={(e) => setLensDays(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
-
-            <label>ชั่วโมงนอกเวลา (+100/ชม.)</label>
-            <input type="number" min="0" value={extraHours} onChange={(e) => setExtraHours(e.target.value)} style={{ width: "100%", padding: 10, marginBottom: 12 }} />
-
-            <hr style={{ margin: "20px 0" }} />
-            <p>จำนวนวันเช่า: <b>{rentalDays}</b> วัน</p>
-            <p>ค่ากล้อง: <b>{cameraPrice}</b> บาท</p>
-            <p>ค่าเลนส์: <b>{lensPrice}</b> บาท</p>
-            <p>ค่านอกเวลา: <b>{extraPrice}</b> บาท</p>
-            <h2>รวมทั้งหมด: {total} บาท</h2>
-
-            <a
-              href="https://line.me/R/ti/p/@48rent"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                marginTop: 20,
-                background: "#111",
-                color: "#fff",
-                padding: "14px 24px",
-                borderRadius: 12,
-                textDecoration: "none"
-              }}
-            >
-              ทัก LINE เพื่อจอง
-            </a>
-
-            <p style={{ marginTop: 12, fontSize: 14, color: "#666" }}>
-              กรุณาแคปหน้าสรุปราคา แล้วส่งใน LINE เพื่อจอง
-            </p>
-          </div>
+              <img src={cam.image} alt={cam.name} style={{ width: "100%", height: 160, objectFit: "contain" }} />
+              <h3 style={{ fontSize: 15 }}>{cam.name}</h3>
+              <p>วันแรก {cam.firstDay} | วันต่อไป {cam.nextDay}</p>
+            </div>
+          ))}
         </div>
+
+        {selected && (
+          <>
+            <h2 style={{ marginTop: 40 }}>2. เลือกเลนส์เสริม</h2>
+            {lensMap[selected.type] ? (
+              <select
+                value={selectedLens}
+                onChange={(e) => setSelectedLens(e.target.value)}
+                style={{ width: "100%", padding: 12, borderRadius: 10 }}
+              >
+                <option value="">ไม่เลือกเลนส์เสริม</option>
+                {lensMap[selected.type].map((lens) => (
+                  <option key={lens} value={lens}>{lens}</option>
+                ))}
+              </select>
+            ) : (
+              <p>รุ่นนี้ไม่มีเลนส์เสริม</p>
+            )}
+
+            <h2 style={{ marginTop: 40 }}>3. เลือกวันรับและคืน</h2>
+            <p>เวลารับ-คืน 10:00 – 18:00 น. | นอกเวลา +100 บาท / ชั่วโมง</p>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
+            <input type="number" min="0" placeholder="ชั่วโมงนอกเวลา" value={extraHours} onChange={(e) => setExtraHours(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
+
+            <h2 style={{ marginTop: 40 }}>4. สรุปค่าเช่า</h2>
+            <div style={{ background: "#fff", padding: 20, borderRadius: 16 }}>
+              <p>รุ่นกล้อง: <b>{selected.name}</b></p>
+              <p>เลนส์เสริม: <b>{selectedLens || "ไม่มี"}</b></p>
+              <p>จำนวนวันเช่า: <b>{rentalDays}</b> วัน</p>
+              <p>ค่ากล้อง: <b>{cameraPrice}</b> บาท</p>
+              <p>ค่าเลนส์เสริม: <b>{lensPrice}</b> บาท</p>
+              <p>ค่านอกเวลา: <b>{extraPrice}</b> บาท</p>
+              <p>ค่าประกัน (สมาชิก): <b>{insurance}</b> บาท</p>
+              <h2>ยอดรวมค่าเช่า: {total} บาท</h2>
+              <p style={{ color: "#666" }}>* ค่าประกันแสดงแยก ไม่รวมในยอดค่าเช่า</p>
+
+              <a href="https://line.me/R/ti/p/@48rent" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 20, background: "#111", color: "#fff", padding: "14px 24px", borderRadius: 12, textDecoration: "none" }}>
+                ทัก LINE เพื่อจอง
+              </a>
+              <p style={{ marginTop: 10 }}>กรุณาแคปหน้าสรุปราคา แล้วส่งใน LINE เพื่อจอง</p>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );
