@@ -44,7 +44,11 @@ export default function Page() {
   const [endDate, setEndDate] = useState("");
   const [extraHours, setExtraHours] = useState(0);
 
-  const rentalDays = calcDays(startDate, endDate);
+  const rawDays = calcDays(startDate, endDate);
+  const minDays = selected
+    ? (selected.name === "Ricoh GR IIIx" || selected.name === "DJI Pocket 3" ? 3 : 2)
+    : 0;
+  const rentalDays = rawDays > 0 ? Math.max(rawDays, minDays) : 0;
   const cameraPrice = selected && rentalDays > 0
     ? selected.firstDay + Math.max(0, rentalDays - 1) * selected.nextDay
     : 0;
@@ -94,6 +98,7 @@ export default function Page() {
 
             <h2 style={{ marginTop: 40 }}>3. เลือกวันรับและคืน</h2>
             <p>เวลารับ-คืน 10:00 – 18:00 น. | นอกเวลา +100 บาท / ชั่วโมง</p>
+            <p>ขั้นต่ำการเช่า: Ricoh GR IIIx / DJI Pocket 3 =
             <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
             <input type="number" min="0" placeholder="ชั่วโมงนอกเวลา" value={extraHours} onChange={(e) => setExtraHours(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
