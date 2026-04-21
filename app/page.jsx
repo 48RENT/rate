@@ -74,6 +74,14 @@ export default function Page() {
     ? (selectedLens ? Math.max(selected.deposit, 3000) : selected.deposit)
     : 0;
 
+  const pickupTime = Number(pickupExtraHours || 0) > 0
+    ? `${10 - Number(pickupExtraHours)}.00 น.`
+    : "10.00 น.";
+
+  const returnTime = Number(returnExtraHours || 0) > 0
+    ? `${18 + Number(returnExtraHours)}.00 น.`
+    : "18.00 น.";
+
   const total = cameraPrice + lensPrice + extraPrice;
 
   return (
@@ -204,6 +212,8 @@ export default function Page() {
               <p>ค่ากล้อง: <b>{cameraPrice}</b> บาท</p>
               <p>ค่าเลนส์เสริม: <b>{lensPrice}</b> บาท</p>
               <p>ค่านอกเวลา: <b>{extraPrice}</b> บาท</p>
+              <p>เวลารับกล้อง: <b>{pickupTime}</b></p>
+              <p>เวลาคืนกล้อง: <b>{returnTime}</b></p>
               <p>ค่าประกัน (สมาชิก): <b>{insurance}</b> บาท</p>
               <h2>ยอดรวมค่าเช่า: {total} บาท</h2>
               <p style={{ color: "#666" }}>* ค่าประกันแสดงแยก ไม่รวมในยอดค่าเช่า</p>
@@ -228,6 +238,10 @@ export default function Page() {
                   `ค่าเลนส์เสริม: ${lensPrice} บาท
 ` +
                   `ค่านอกเวลา: ${extraPrice} บาท
+` +
+                  `เวลารับกล้อง: ${pickupTime}
+` +
+                  `เวลาคืนกล้อง: ${returnTime}
 ` +
                   `ค่าประกัน: ${insurance} บาท
 ` +
