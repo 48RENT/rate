@@ -252,19 +252,17 @@ export default function Page() {
                 style={{
                   display: "inline-block",
                   marginTop: 20,
-                  background: "#111",
+                  background: "#00c854",
                   color: "#fff",
                   padding: "14px 24px",
                   borderRadius: 12,
                   textDecoration: "none"
                 }}
               >
-                ส่งสรุปเข้า LINE เพื่อจอง
+                ส่งสรุปเข้า LINE เพื่อเฃ๊กคิว
               </a>
 
-              <p style={{ marginTop: 10 }}>
-                กรุณาแคปหน้าสรุปราคา แล้วส่งใน LINE เพื่อจอง
-              </p>
+          
             </div>
           </>
         )}
