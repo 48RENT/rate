@@ -259,7 +259,7 @@ export default function Page() {
                   textDecoration: "none"
                 }}
               >
-                ส่งสรุปเข้า LINE เพื่อเฃ๊กคิว
+                ส่งสรุปทาง line เพื่อตรวจสอบคิว
               </a>
 
           
