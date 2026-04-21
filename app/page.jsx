@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const cameras = [
   { name: "Ricoh GR IIIx", firstDay: 600, nextDay: 390, image: "/ricohgriiix.jpg", type: "special", deposit: 3000 },
@@ -38,6 +38,7 @@ function calcDays(start, end) {
 }
 
 export default function Page() {
+  const nextSectionRef = useRef(null);
   const [selected, setSelected] = useState(null);
   const [selectedLens, setSelectedLens] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -89,6 +90,9 @@ export default function Page() {
               onClick={() => {
                 setSelected(cam);
                 setSelectedLens("");
+                setTimeout(() => {
+                  nextSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+                }, 150);
               }}
               style={{
                 background: "#fff",
@@ -111,6 +115,7 @@ export default function Page() {
 
         {selected && (
           <>
+            <div ref={nextSectionRef}>
             <h2 style={{ marginTop: 40 }}>2. เลือกเลนส์เสริม</h2>
             {lensMap[selected.type] ? (
               <select
@@ -127,10 +132,13 @@ export default function Page() {
               <p>รุ่นนี้ไม่มีเลนส์เสริม</p>
             )}
 
+            </div>
+
             <h2 style={{ marginTop: 40 }}>3. เลือกวันรับและวันคืน</h2>
             <p>เวลารับ-คืน 10:00 – 18:00 น. | นอกเวลา +100 บาท / ชั่วโมง</p>
             <p>ขั้นต่ำการเช่า: Ricoh GR IIIx / DJI Pocket 3 = 3 วัน, รุ่นอื่นทั้งหมด = 2 วัน</p>
 
+            <label style={{ marginTop: 12, display: "block" }}>วันที่รับกล้อง</label>
             <input
               type="date"
               value={startDate}
@@ -138,6 +146,7 @@ export default function Page() {
               style={{ width: "100%", padding: 10, marginTop: 10 }}
             />
 
+            <label style={{ marginTop: 12, display: "block" }}>วันที่คืนกล้อง</label>
             <input
               type="date"
               value={endDate}
@@ -149,10 +158,36 @@ export default function Page() {
               กรุณาแจ้งจำนวนชั่วโมงหากต้องการรับหรือคืนนอกเวลาปกติ (เพิ่ม 100 บาท / ชั่วโมง)
             </p>
 
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+              <div>
+                <label style={{ display: "block", marginBottom: 6 }}>รับก่อนเวลา (ชั่วโมง)</label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="เช่น 2"
+                  value={extraHours}
+                  onChange={(e) => setExtraHours(e.target.value)}
+                  style={{ width: "100%", padding: 10 }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: 6 }}>คืนเกินเวลา (ชั่วโมง)</label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="เช่น 1"
+                  value={extraHours}
+                  onChange={(e) => setExtraHours(e.target.value)}
+                  style={{ width: "100%", padding: 10 }}
+                />
+              </div>
+            </div>
+
             <input
               type="number"
               min="0"
-              placeholder="ชั่วโมงนอกเวลา"
+              placeholder="ชั่วโมงนอกเวลา (รวม)"
               value={extraHours}
               onChange={(e) => setExtraHours(e.target.value)}
               style={{ width: "100%", padding: 10, marginTop: 10 }}
@@ -172,16 +207,27 @@ export default function Page() {
 
               <a
                 href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
-                  `สนใจเช่ากล้อง\n\n` +
-                  `รุ่น: ${selected.name}\n` +
-                  `เลนส์เสริม: ${selectedLens || "ไม่มี"}\n` +
-                  `วันรับ: ${startDate || "-"}\n` +
-                  `วันคืน: ${endDate || "-"}\n` +
-                  `จำนวนวันเช่า: ${rentalDays} วัน\n` +
-                  `ค่ากล้อง: ${cameraPrice} บาท\n` +
-                  `ค่าเลนส์เสริม: ${lensPrice} บาท\n` +
-                  `ค่านอกเวลา: ${extraPrice} บาท\n` +
-                  `ค่าประกัน: ${insurance} บาท\n` +
+                  `สนใจเช่ากล้อง
+
+` +
+                  `รุ่น: ${selected.name}
+` +
+                  `เลนส์เสริม: ${selectedLens || "ไม่มี"}
+` +
+                  `วันรับ: ${startDate || "-"}
+` +
+                  `วันคืน: ${endDate || "-"}
+` +
+                  `จำนวนวันเช่า: ${rentalDays} วัน
+` +
+                  `ค่ากล้อง: ${cameraPrice} บาท
+` +
+                  `ค่าเลนส์เสริม: ${lensPrice} บาท
+` +
+                  `ค่านอกเวลา: ${extraPrice} บาท
+` +
+                  `ค่าประกัน: ${insurance} บาท
+` +
                   `ยอดรวมค่าเช่า: ${total} บาท`
                 )}`}
                 target="_blank"
