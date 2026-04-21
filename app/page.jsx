@@ -43,7 +43,8 @@ export default function Page() {
   const [selectedLens, setSelectedLens] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [extraHours, setExtraHours] = useState(0);
+  const [pickupExtraHours, setPickupExtraHours] = useState(0);
+  const [returnExtraHours, setReturnExtraHours] = useState(0);
 
   const rawDays = calcDays(startDate, endDate);
 
@@ -66,7 +67,8 @@ export default function Page() {
     ? rentalDays * 200
     : 0;
 
-  const extraPrice = Number(extraHours || 0) * 100;
+  const totalExtraHours = Number(pickupExtraHours || 0) + Number(returnExtraHours || 0);
+  const extraPrice = totalExtraHours * 100;
 
   const insurance = selected
     ? (selectedLens ? Math.max(selected.deposit, 3000) : selected.deposit)
@@ -160,36 +162,37 @@ export default function Page() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
               <div>
-                <label style={{ display: "block", marginBottom: 6 }}>รับก่อนเวลา (ชั่วโมง)</label>
+                <label style={{ display: "block", marginBottom: 6 }}>รับก่อนเวลา 10.00 น. (ชั่วโมง)</label>
                 <input
                   type="number"
                   min="0"
                   placeholder="เช่น 2"
-                  value={extraHours}
-                  onChange={(e) => setExtraHours(e.target.value)}
+                  value={pickupExtraHours}
+                  onChange={(e) => setPickupExtraHours(e.target.value)}
                   style={{ width: "100%", padding: 10 }}
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: 6 }}>คืนเกินเวลา (ชั่วโมง)</label>
+                <label style={{ display: "block", marginBottom: 6 }}>คืนเกินเวลา 18.00 น. (ชั่วโมง)</label>
                 <input
                   type="number"
                   min="0"
                   placeholder="เช่น 1"
-                  value={extraHours}
-                  onChange={(e) => setExtraHours(e.target.value)}
+                  value={returnExtraHours}
+                  onChange={(e) => setReturnExtraHours(e.target.value)}
                   style={{ width: "100%", padding: 10 }}
                 />
               </div>
             </div>
 
+            <label style={{ marginTop: 14, display: "block" }}>รวมเวลา (ชั่วโมง)</label>
             <input
               type="number"
               min="0"
-              placeholder="ชั่วโมงนอกเวลา (รวม)"
-              value={extraHours}
-              onChange={(e) => setExtraHours(e.target.value)}
+              placeholder="รวมเวลา (ชั่วโมง)"
+              value={totalExtraHours}
+              readOnly
               style={{ width: "100%", padding: 10, marginTop: 10 }}
             />
 
