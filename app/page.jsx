@@ -165,7 +165,7 @@ export default function Page() {
             />
 
             <p style={{ marginTop: 12, color: "#444" }}>
-              กรุณาแจ้งจำนวนชั่วโมงหากต้องการรับหรือคืนนอกเวลาปกติ (เพิ่ม 100 บาท / ชั่วโมง)
+                รับนอกเวลา (ถ้ามี) (เพิ่ม 100 บาท / ชั่วโมง)
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
