@@ -915,7 +915,7 @@ export default function Page() {
       LINE BUTTON
   ========================== */}
 
-  <a
+   <a
     href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
       lineMessage
     )}`}
@@ -936,7 +936,10 @@ export default function Page() {
   >
     ส่งรูปเข้า LINE เพื่อจอง
   </a>
-</div>
-    </main>
-  );
+
+  </div>
+  </>
+)}
+</main>
+);
 }
