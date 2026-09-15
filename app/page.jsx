@@ -711,188 +711,241 @@ export default function Page() {
               และแสดงในหน้าสรุปค่าเช่า
             </p>
 
-            {/* =========================
-                4. สรุปค่าเช่า
-            ========================== */}
+{/* =========================
+    4. สรุปค่าเช่า
+========================== */}
 
-            <h2
-              style={{
-                marginTop: 40,
-              }}
-            >
-              4. สรุปค่าเช่า
-            </h2>
+<h2
+  style={{
+    marginTop: 40,
+  }}
+>
+  4. สรุปค่าเช่า
+</h2>
 
-            <div
-              style={{
-                background: "#fff",
-                padding: 20,
-                borderRadius: 16,
-              }}
-            >
-              <p>
-                รุ่นกล้อง:{" "}
-                <b>
-                  {selected.name}
-                </b>
-              </p>
+<div
+  style={{
+    background: "#fff",
+    padding: 20,
+    borderRadius: 16,
+  }}
+>
+  <p>
+    รุ่นกล้อง:{" "}
+    <b>{selected.name}</b>
+  </p>
 
-              <p>
-                เลนส์เสริม:{" "}
-                <b>
-                  {selectedLens ||
-                    "ไม่มี"}
-                </b>
-              </p>
+  <p>
+    เลนส์เสริม:{" "}
+    <b>
+      {selectedLens || "ไม่มี"}
+    </b>
+  </p>
 
-              <hr />
+  <hr />
 
-              <p>
-                วันรับกล้อง:{" "}
-                <b>
-                  {formatThaiDate(
-                    startDate
-                  )}
-                </b>
-              </p>
+  <p>
+    วันรับกล้อง:{" "}
+    <b>
+      {formatThaiDate(startDate)}
+    </b>
+  </p>
 
-              <p>
-                เวลารับกล้อง:{" "}
-                <b>
-                  {pickupOption.label}
-                </b>
-              </p>
+  <p>
+    เวลารับกล้อง:{" "}
+    <b>{pickupOption.label}</b>
+  </p>
 
-              <p>
-                วันคืนกล้อง:{" "}
-                <b>
-                  {formatThaiDate(
-                    endDate
-                  )}
-                </b>
-              </p>
+  <p>
+    วันคืนกล้อง:{" "}
+    <b>
+      {formatThaiDate(endDate)}
+    </b>
+  </p>
 
-              <p>
-                เวลาคืนกล้อง:{" "}
-                <b>
-                  {returnOption.label}
-                </b>
-              </p>
+  <p>
+    เวลาคืนกล้อง:{" "}
+    <b>{returnOption.label}</b>
+  </p>
 
-              <hr />
+  <hr />
 
-              <p>
-                จำนวนวันเช่า
-                (คิดขั้นต่ำแล้ว):{" "}
-                <b>
-                  {rentalDays}
-                </b>{" "}
-                วัน
-              </p>
+  <p>
+    จำนวนวันเช่า (คิดขั้นต่ำแล้ว):{" "}
+    <b>{rentalDays}</b> วัน
+  </p>
 
-              <p>
-                ค่ากล้อง:{" "}
-                <b>
-                  {cameraPrice}
-                </b>{" "}
-                บาท
-              </p>
+  <p>
+    ค่ากล้อง:{" "}
+    <b>{cameraPrice}</b> บาท
+  </p>
 
-              <p>
-                ค่าเลนส์เสริม:{" "}
-                <b>
-                  {lensPrice}
-                </b>{" "}
-                บาท
-              </p>
+  <p>
+    ค่าเลนส์เสริม:{" "}
+    <b>{lensPrice}</b> บาท
+  </p>
 
-              <p>
-                ค่ารับนอกเวลา:{" "}
-                <b>
-                  {pickupExtraPrice}
-                </b>{" "}
-                บาท
-              </p>
+  <p>
+    ค่ารับนอกเวลา:{" "}
+    <b>{pickupExtraPrice}</b> บาท
+  </p>
 
-              <p>
-                ค่าคืนนอกเวลา:{" "}
-                <b>
-                  {returnExtraPrice}
-                </b>{" "}
-                บาท
-              </p>
+  <p>
+    ค่าคืนนอกเวลา:{" "}
+    <b>{returnExtraPrice}</b> บาท
+  </p>
 
-              <p>
-                ค่านอกเวลารวม:{" "}
-                <b>
-                  {extraPrice}
-                </b>{" "}
-                บาท
-              </p>
+  <p>
+    ค่านอกเวลารวม:{" "}
+    <b>{extraPrice}</b> บาท
+  </p>
 
-              <p>
-                ค่าประกัน (สมาชิก):{" "}
-                <b>
-                  {insurance}
-                </b>{" "}
-                บาท
-              </p>
+  <hr />
 
-              <hr />
+  {/* =========================
+      สรุปยอดใหญ่
+  ========================== */}
 
-              <h2>
-                ยอดรวมค่าเช่า:{" "}
-                {total} บาท
-              </h2>
+  <div
+    style={{
+      marginTop: 24,
+      padding: 20,
+      background: "#f8f8f8",
+      borderRadius: 14,
+    }}
+  >
+    <h2
+      style={{
+        marginTop: 0,
+        marginBottom: 20,
+      }}
+    >
+      สรุป
+    </h2>
 
-              <p
-                style={{
-                  color: "#666",
-                }}
-              >
-                * ค่าประกันแสดงแยก
-                ไม่รวมในยอดค่าเช่า
-              </p>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 14,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+        }}
+      >
+        ค่าเช่า
+      </span>
 
-              {/* =========================
-                  LINE
-              ========================== */}
+      <span
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+        }}
+      >
+        {total.toLocaleString()} บาท
+      </span>
+    </div>
 
-              <a
-                href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
-                  lineMessage
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display:
-                    "inline-block",
-                  marginTop: 20,
-                  background: "#111",
-                  color: "#fff",
-                  padding:
-                    "14px 24px",
-                  borderRadius: 12,
-                  textDecoration:
-                    "none",
-                }}
-              >
-                ส่งสรุปเข้า LINE
-                เพื่อจอง
-              </a>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 18,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+        }}
+      >
+        ค่าประกัน
+      </span>
 
-              <p
-                style={{
-                  marginTop: 10,
-                }}
-              >
-                กรุณาแคปหน้าสรุปราคา
-                แล้วส่งใน LINE เพื่อจอง
-              </p>
-            </div>
-          </>
-        )}
-      </div>
+      <span
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+        }}
+      >
+        {insurance.toLocaleString()} บาท
+      </span>
+    </div>
+
+    <hr />
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 18,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+        }}
+      >
+        รวมยอดทั้งหมด
+      </span>
+
+      <span
+        style={{
+          fontSize: 24,
+          fontWeight: 800,
+        }}
+      >
+        {(total + insurance).toLocaleString()} บาท
+      </span>
+    </div>
+
+    <p
+      style={{
+        marginTop: 16,
+        marginBottom: 0,
+        color: "#666",
+        fontSize: 14,
+        lineHeight: 1.6,
+      }}
+    >
+      * ค่าประกันจะคืนเมื่อคืนกล้องเรียบร้อย
+      และกล้องไม่เสียหาย
+    </p>
+  </div>
+
+  {/* =========================
+      LINE BUTTON
+  ========================== */}
+
+  <a
+    href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
+      lineMessage
+    )}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: "block",
+      marginTop: 20,
+      background: "#06C755",
+      color: "#fff",
+      padding: "15px 24px",
+      borderRadius: 12,
+      textDecoration: "none",
+      textAlign: "center",
+      fontWeight: 700,
+      fontSize: 16,
+    }}
+  >
+    ส่งรูปเข้า LINE เพื่อจอง
+  </a>
+</div>
     </main>
   );
 }
