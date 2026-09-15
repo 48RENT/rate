@@ -731,24 +731,19 @@ export default function Page() {
   }}
 >
   <p>
-    รุ่นกล้อง:{" "}
-    <b>{selected.name}</b>
+    รุ่นกล้อง: <b>{selected.name}</b>
   </p>
 
   <p>
     เลนส์เสริม:{" "}
-    <b>
-      {selectedLens || "ไม่มี"}
-    </b>
+    <b>{selectedLens || "ไม่มี"}</b>
   </p>
 
   <hr />
 
   <p>
     วันรับกล้อง:{" "}
-    <b>
-      {formatThaiDate(startDate)}
-    </b>
+    <b>{formatThaiDate(startDate)}</b>
   </p>
 
   <p>
@@ -758,9 +753,7 @@ export default function Page() {
 
   <p>
     วันคืนกล้อง:{" "}
-    <b>
-      {formatThaiDate(endDate)}
-    </b>
+    <b>{formatThaiDate(endDate)}</b>
   </p>
 
   <p>
@@ -776,13 +769,11 @@ export default function Page() {
   </p>
 
   <p>
-    ค่ากล้อง:{" "}
-    <b>{cameraPrice}</b> บาท
+    ค่ากล้อง: <b>{cameraPrice}</b> บาท
   </p>
 
   <p>
-    ค่าเลนส์เสริม:{" "}
-    <b>{lensPrice}</b> บาท
+    ค่าเลนส์เสริม: <b>{lensPrice}</b> บาท
   </p>
 
   <p>
