@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const cameras = [
   {
@@ -101,23 +101,79 @@ const lensMap = {
 };
 
 /*
-  ช่วงเวลานอกเวลาปกติ
+  เวลานอกเวลา
 
-  เวลาปกติ: 10:00–18:00 = 0 บาท
+  เวลาปกติ:
+  10.00–18.00 น. = ไม่มีค่านอกเวลา
 
-  ก่อนเวลา:
-  06:00–06:59 = 400 บาท
-  07:00–07:59 = 300 บาท
-  08:00–08:59 = 200 บาท
-  09:00–09:59 = 100 บาท
+  รอบเช้า:
+  06.00–06.59 น. = 400 บาท
+  07.00–07.59 น. = 300 บาท
+  08.00–08.59 น. = 200 บาท
+  09.00–09.59 น. = 100 บาท
 
-  หลังเวลา:
-  19:00–19:59 = 100 บาท
-  20:00–20:59 = 200 บาท
-  21:00–21:59 = 300 บาท
-  22:00–22:59 = 400 บาท
+  รอบเย็น:
+  19.00–19.59 น. = 100 บาท
+  20.00–20.59 น. = 200 บาท
+  21.00–21.59 น. = 300 บาท
+  22.00–22.59 น. = 400 บาท
+
+  หมายเหตุ:
+  ราคาจะไม่แสดงใน Dropdown
+  แต่ระบบยังใช้คำนวณราคาด้านหลัง
 */
 
+const extraTimeOptions = [
+  {
+    value: "normal",
+    label: "เวลาปกติ 10.00–18.00 น. — ไม่มีค่านอกเวลา",
+    price: 0,
+  },
+
+  // รอบเช้า
+  {
+    value: "before6",
+    label: "06.00 น. - 06.59 น.",
+    price: 400,
+  },
+  {
+    value: "before7",
+    label: "07.00 น. - 07.59 น.",
+    price: 300,
+  },
+  {
+    value: "before8",
+    label: "08.00 น. - 08.59 น.",
+    price: 200,
+  },
+  {
+    value: "before9",
+    label: "09.00 น. - 09.59 น.",
+    price: 100,
+  },
+
+  // รอบเย็น
+  {
+    value: "after19",
+    label: "19.00 น. - 19.59 น.",
+    price: 100,
+  },
+  {
+    value: "after20",
+    label: "20.00 น. - 20.59 น.",
+    price: 200,
+  },
+  {
+    value: "after21",
+    label: "21.00 น. - 21.59 น.",
+    price: 300,
+  },
+  {
+    value: "after22",
+    label: "22.00 น. - 22.59 น.",
+    price: 400,
+  },
+];
 
 function calcDays(start, end) {
   if (!start || !end) return 0;
@@ -132,6 +188,13 @@ function calcDays(start, end) {
   return diff >= 0 ? diff + 1 : 0;
 }
 
+function getTimeOption(value) {
+  return (
+    extraTimeOptions.find(
+      (option) => option.value === value
+    ) || extraTimeOptions[0]
+  );
+}
 
 function formatThaiDate(dateString) {
   if (!dateString) return "-";
@@ -160,7 +223,27 @@ export default function Page() {
   const [returnTimeOption, setReturnTimeOption] =
     useState("normal");
 
-  const rawDays = calcDays(startDate, endDate);
+  /*
+    ใช้สำหรับเลื่อนหน้าจออัตโนมัติ
+    หลังจากลูกค้าเลือกกล้อง
+  */
+  const lensSectionRef = useRef(null);
+
+  useEffect(() => {
+    if (selected && lensSectionRef.current) {
+      setTimeout(() => {
+        lensSectionRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [selected]);
+
+  const rawDays = calcDays(
+    startDate,
+    endDate
+  );
 
   const minDays = selected
     ? selected.name === "Ricoh GR IIIx" ||
@@ -170,7 +253,9 @@ export default function Page() {
     : 0;
 
   const rentalDays =
-    rawDays > 0 ? Math.max(rawDays, minDays) : 0;
+    rawDays > 0
+      ? Math.max(rawDays, minDays)
+      : 0;
 
   const cameraPrice =
     selected && rentalDays > 0
@@ -192,11 +277,15 @@ export default function Page() {
     returnTimeOption
   );
 
-  const pickupExtraPrice = pickupOption.price;
-  const returnExtraPrice = returnOption.price;
+  const pickupExtraPrice =
+    pickupOption.price;
+
+  const returnExtraPrice =
+    returnOption.price;
 
   const extraPrice =
-    pickupExtraPrice + returnExtraPrice;
+    pickupExtraPrice +
+    returnExtraPrice;
 
   const insurance = selected
     ? selectedLens
@@ -212,17 +301,33 @@ export default function Page() {
   const lineMessage =
     `สนใจเช่ากล้อง\n\n` +
     `รุ่น: ${selected?.name || "-"}\n` +
-    `เลนส์เสริม: ${selectedLens || "ไม่มี"}\n\n` +
-    `วันรับกล้อง: ${formatThaiDate(startDate)}\n` +
-    `เวลารับกล้อง: ${pickupOption.label}\n\n` +
-    `วันคืนกล้อง: ${formatThaiDate(endDate)}\n` +
-    `เวลาคืนกล้อง: ${returnOption.label}\n\n` +
+    `เลนส์เสริม: ${
+      selectedLens || "ไม่มี"
+    }\n\n` +
+    `วันรับกล้อง: ${
+      formatThaiDate(startDate)
+    }\n` +
+    `เวลารับกล้อง: ${
+      pickupOption.label
+    }\n\n` +
+    `วันคืนกล้อง: ${
+      formatThaiDate(endDate)
+    }\n` +
+    `เวลาคืนกล้อง: ${
+      returnOption.label
+    }\n\n` +
     `จำนวนวันเช่า: ${rentalDays} วัน\n` +
     `ค่ากล้อง: ${cameraPrice} บาท\n` +
     `ค่าเลนส์เสริม: ${lensPrice} บาท\n` +
-    `ค่ารับนอกเวลา: ${pickupExtraPrice} บาท\n` +
-    `ค่าคืนนอกเวลา: ${returnExtraPrice} บาท\n` +
-    `ค่านอกเวลารวม: ${extraPrice} บาท\n` +
+    `ค่ารับนอกเวลา: ${
+      pickupExtraPrice
+    } บาท\n` +
+    `ค่าคืนนอกเวลา: ${
+      returnExtraPrice
+    } บาท\n` +
+    `ค่านอกเวลารวม: ${
+      extraPrice
+    } บาท\n` +
     `ค่าประกัน: ${insurance} บาท\n\n` +
     `ยอดรวมค่าเช่า: ${total} บาท`;
 
@@ -232,7 +337,8 @@ export default function Page() {
         minHeight: "100vh",
         background: "#f8f8f8",
         padding: 20,
-        fontFamily: "Arial, sans-serif",
+        fontFamily:
+          "Arial, sans-serif",
       }}
     >
       <div
@@ -241,6 +347,10 @@ export default function Page() {
           margin: "0 auto",
         }}
       >
+        {/* =========================
+            HEADER
+        ========================== */}
+
         <h1
           style={{
             textAlign: "center",
@@ -263,7 +373,11 @@ export default function Page() {
             1. เลือกรุ่นกล้อง
         ========================== */}
 
-        <h2 style={{ marginTop: 30 }}>
+        <h2
+          style={{
+            marginTop: 30,
+          }}
+        >
           1. เลือกรุ่นกล้อง
         </h2>
 
@@ -281,6 +395,12 @@ export default function Page() {
               onClick={() => {
                 setSelected(cam);
                 setSelectedLens("");
+
+                /*
+                  เมื่อเลือกกล้อง
+                  useEffect ด้านบนจะทำการ
+                  scroll ไปข้อ 2 ให้อัตโนมัติ
+                */
               }}
               style={{
                 background: "#fff",
@@ -291,6 +411,8 @@ export default function Page() {
                   selected?.name === cam.name
                     ? "2px solid #111"
                     : "1px solid #ddd",
+                transition:
+                  "all 0.2s ease",
               }}
             >
               <img
@@ -303,13 +425,17 @@ export default function Page() {
                 }}
               />
 
-              <h3 style={{ fontSize: 15 }}>
+              <h3
+                style={{
+                  fontSize: 15,
+                }}
+              >
                 {cam.name}
               </h3>
 
               <p>
-                วันแรก {cam.firstDay} | วันต่อไป{" "}
-                {cam.nextDay}
+                วันแรก {cam.firstDay} |
+                วันต่อไป {cam.nextDay}
               </p>
             </div>
           ))}
@@ -321,64 +447,85 @@ export default function Page() {
                 2. เลือกเลนส์
             ========================== */}
 
-            <h2 style={{ marginTop: 40 }}>
-              2. เลือกเลนส์เสริม
-            </h2>
-
-            {lensMap[selected.type] ? (
-              <select
-                value={selectedLens}
-                onChange={(e) =>
-                  setSelectedLens(e.target.value)
-                }
+            <section
+              ref={lensSectionRef}
+              style={{
+                scrollMarginTop: 20,
+              }}
+            >
+              <h2
                 style={{
-                  width: "100%",
-                  padding: 12,
-                  borderRadius: 10,
+                  marginTop: 40,
                 }}
               >
-                <option value="">
-                  ไม่เลือกเลนส์เสริม
-                </option>
+                2. เลือกเลนส์เสริม
+              </h2>
 
-                {lensMap[selected.type].map(
-                  (lens) => (
+              {lensMap[selected.type] ? (
+                <select
+                  value={selectedLens}
+                  onChange={(e) =>
+                    setSelectedLens(
+                      e.target.value
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    borderRadius: 10,
+                  }}
+                >
+                  <option value="">
+                    ไม่เลือกเลนส์เสริม
+                  </option>
+
+                  {lensMap[
+                    selected.type
+                  ].map((lens) => (
                     <option
                       key={lens}
                       value={lens}
                     >
                       {lens}
                     </option>
-                  )
-                )}
-              </select>
-            ) : (
-              <p>รุ่นนี้ไม่มีเลนส์เสริม</p>
-            )}
+                  ))}
+                </select>
+              ) : (
+                <p>
+                  รุ่นนี้ไม่มีเลนส์เสริม
+                </p>
+              )}
+            </section>
 
             {/* =========================
-                3. วันและเวลา
+                3. วันและเวลารับ-คืน
             ========================== */}
 
-            <h2 style={{ marginTop: 40 }}>
+            <h2
+              style={{
+                marginTop: 40,
+              }}
+            >
               3. เลือกวันและเวลารับ-คืน
             </h2>
 
             <p>
-              เวลาปกติ 10:00–18:00 น.
-              <br />
-              นอกเวลาคิดค่าบริการตามช่วงเวลาที่เลือก
+              เวลาปกติ 10.00–18.00 น.
             </p>
 
             <p>
-              ขั้นต่ำการเช่า: Ricoh GR IIIx /
-              DJI Pocket 3 = 3 วัน,
+              ขั้นต่ำการเช่า: Ricoh GR
+              IIIx / DJI Pocket 3 = 3 วัน,
               รุ่นอื่นทั้งหมด = 2 วัน
             </p>
 
             {/* วันรับ */}
 
-            <h3 style={{ marginTop: 24 }}>
+            <h3
+              style={{
+                marginTop: 24,
+              }}
+            >
               วันรับกล้อง
             </h3>
 
@@ -386,7 +533,9 @@ export default function Page() {
               type="date"
               value={startDate}
               onChange={(e) =>
-                setStartDate(e.target.value)
+                setStartDate(
+                  e.target.value
+                )
               }
               style={{
                 width: "100%",
@@ -397,60 +546,77 @@ export default function Page() {
 
             {/* เวลารับ */}
 
-            <h3 style={{ marginTop: 20 }}>
+            <h3
+              style={{
+                marginTop: 20,
+              }}
+            >
               เวลารับกล้อง
             </h3>
 
-           <select
-  value={pickupTimeOption}
-  onChange={(e) =>
-    setPickupTimeOption(e.target.value)
-  }
-  style={{
-    width: "100%",
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 10,
-  }}
->
-  <option value="normal">
-    เวลาปกติ 10.00–18.00 น. — ไม่มีค่านอกเวลา
-  </option>
+            <select
+              value={pickupTimeOption}
+              onChange={(e) =>
+                setPickupTimeOption(
+                  e.target.value
+                )
+              }
+              style={{
+                width: "100%",
+                padding: 12,
+                borderRadius: 10,
+                marginTop: 10,
+              }}
+            >
+              <option value="normal">
+                เวลาปกติ 10.00–18.00 น.
+                — ไม่มีค่านอกเวลา
+              </option>
 
-  <optgroup label="รอบเช้า">
-    <option value="before6">
-      6.00 น. - 6.59 น.
-    </option>
-    <option value="before7">
-      7.00 น. - 7.59 น.
-    </option>
-    <option value="before8">
-      8.00 น. - 8.59 น.
-    </option>
-    <option value="before9">
-      9.00 น. - 9.59 น.
-    </option>
-  </optgroup>
+              <optgroup label="รอบเช้า">
+                <option value="before6">
+                  06.00 น. - 06.59 น.
+                </option>
 
-  <optgroup label="รอบเย็น">
-    <option value="after19">
-      19.00 น. - 19.59 น.
-    </option>
-    <option value="after20">
-      20.00 น. - 20.59 น.
-    </option>
-    <option value="after21">
-      21.00 น. - 21.59 น.
-    </option>
-    <option value="after22">
-      22.00 น. - 22.59 น.
-    </option>
-  </optgroup>
-</select>
+                <option value="before7">
+                  07.00 น. - 07.59 น.
+                </option>
+
+                <option value="before8">
+                  08.00 น. - 08.59 น.
+                </option>
+
+                <option value="before9">
+                  09.00 น. - 09.59 น.
+                </option>
+              </optgroup>
+
+              <optgroup label="รอบเย็น">
+                <option value="after19">
+                  19.00 น. - 19.59 น.
+                </option>
+
+                <option value="after20">
+                  20.00 น. - 20.59 น.
+                </option>
+
+                <option value="after21">
+                  21.00 น. - 21.59 น.
+                </option>
+
+                <option value="after22">
+                  22.00 น. - 22.59 น.
+                </option>
+              </optgroup>
+            </select>
 
             {/* วันคืน */}
 
-            <h3 style={{ marginTop: 24 }}>
+            <h3
+              style={{
+                marginTop: 24,
+              }}
+            >
               วันคืนกล้อง
             </h3>
 
@@ -458,7 +624,9 @@ export default function Page() {
               type="date"
               value={endDate}
               onChange={(e) =>
-                setEndDate(e.target.value)
+                setEndDate(
+                  e.target.value
+                )
               }
               style={{
                 width: "100%",
@@ -469,56 +637,69 @@ export default function Page() {
 
             {/* เวลาคืน */}
 
-            <h3 style={{ marginTop: 20 }}>
+            <h3
+              style={{
+                marginTop: 20,
+              }}
+            >
               เวลาคืนกล้อง
             </h3>
 
             <select
-  value={returnTimeOption}
-  onChange={(e) =>
-    setReturnTimeOption(e.target.value)
-  }
-  style={{
-    width: "100%",
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 10,
-  }}
->
-  <option value="normal">
-    เวลาปกติ 10.00–18.00 น. — ไม่มีค่านอกเวลา
-  </option>
+              value={returnTimeOption}
+              onChange={(e) =>
+                setReturnTimeOption(
+                  e.target.value
+                )
+              }
+              style={{
+                width: "100%",
+                padding: 12,
+                borderRadius: 10,
+                marginTop: 10,
+              }}
+            >
+              <option value="normal">
+                เวลาปกติ 10.00–18.00 น.
+                — ไม่มีค่านอกเวลา
+              </option>
 
-  <optgroup label="รอบเช้า">
-    <option value="before6">
-      6.00 น. - 6.59 น.
-    </option>
-    <option value="before7">
-      7.00 น. - 7.59 น.
-    </option>
-    <option value="before8">
-      8.00 น. - 8.59 น.
-    </option>
-    <option value="before9">
-      9.00 น. - 9.59 น.
-    </option>
-  </optgroup>
+              <optgroup label="รอบเช้า">
+                <option value="before6">
+                  06.00 น. - 06.59 น.
+                </option>
 
-  <optgroup label="รอบเย็น">
-    <option value="after19">
-      19.00 น. - 19.59 น.
-    </option>
-    <option value="after20">
-      20.00 น. - 20.59 น.
-    </option>
-    <option value="after21">
-      21.00 น. - 21.59 น.
-    </option>
-    <option value="after22">
-      22.00 น. - 22.59 น.
-    </option>
-  </optgroup>
-</select>
+                <option value="before7">
+                  07.00 น. - 07.59 น.
+                </option>
+
+                <option value="before8">
+                  08.00 น. - 08.59 น.
+                </option>
+
+                <option value="before9">
+                  09.00 น. - 09.59 น.
+                </option>
+              </optgroup>
+
+              <optgroup label="รอบเย็น">
+                <option value="after19">
+                  19.00 น. - 19.59 น.
+                </option>
+
+                <option value="after20">
+                  20.00 น. - 20.59 น.
+                </option>
+
+                <option value="after21">
+                  21.00 น. - 21.59 น.
+                </option>
+
+                <option value="after22">
+                  22.00 น. - 22.59 น.
+                </option>
+              </optgroup>
+            </select>
 
             <p
               style={{
@@ -526,15 +707,19 @@ export default function Page() {
                 color: "#444",
               }}
             >
-              ระบบจะคิดค่านอกเวลาแยกตามเวลารับ
-              และเวลาคืนที่เลือก
+              ค่านอกเวลาจะคำนวณให้อัตโนมัติ
+              และแสดงในหน้าสรุปค่าเช่า
             </p>
 
             {/* =========================
                 4. สรุปค่าเช่า
             ========================== */}
 
-            <h2 style={{ marginTop: 40 }}>
+            <h2
+              style={{
+                marginTop: 40,
+              }}
+            >
               4. สรุปค่าเช่า
             </h2>
 
@@ -547,13 +732,16 @@ export default function Page() {
             >
               <p>
                 รุ่นกล้อง:{" "}
-                <b>{selected.name}</b>
+                <b>
+                  {selected.name}
+                </b>
               </p>
 
               <p>
                 เลนส์เสริม:{" "}
                 <b>
-                  {selectedLens || "ไม่มี"}
+                  {selectedLens ||
+                    "ไม่มี"}
                 </b>
               </p>
 
@@ -562,68 +750,99 @@ export default function Page() {
               <p>
                 วันรับกล้อง:{" "}
                 <b>
-                  {formatThaiDate(startDate)}
+                  {formatThaiDate(
+                    startDate
+                  )}
                 </b>
               </p>
 
               <p>
                 เวลารับกล้อง:{" "}
-                <b>{pickupOption.label}</b>
+                <b>
+                  {pickupOption.label}
+                </b>
               </p>
 
               <p>
                 วันคืนกล้อง:{" "}
                 <b>
-                  {formatThaiDate(endDate)}
+                  {formatThaiDate(
+                    endDate
+                  )}
                 </b>
               </p>
 
               <p>
                 เวลาคืนกล้อง:{" "}
-                <b>{returnOption.label}</b>
+                <b>
+                  {returnOption.label}
+                </b>
               </p>
 
               <hr />
 
               <p>
-                จำนวนวันเช่า (คิดขั้นต่ำแล้ว):{" "}
-                <b>{rentalDays}</b> วัน
+                จำนวนวันเช่า
+                (คิดขั้นต่ำแล้ว):{" "}
+                <b>
+                  {rentalDays}
+                </b>{" "}
+                วัน
               </p>
 
               <p>
                 ค่ากล้อง:{" "}
-                <b>{cameraPrice}</b> บาท
+                <b>
+                  {cameraPrice}
+                </b>{" "}
+                บาท
               </p>
 
               <p>
                 ค่าเลนส์เสริม:{" "}
-                <b>{lensPrice}</b> บาท
+                <b>
+                  {lensPrice}
+                </b>{" "}
+                บาท
               </p>
 
               <p>
                 ค่ารับนอกเวลา:{" "}
-                <b>{pickupExtraPrice}</b> บาท
+                <b>
+                  {pickupExtraPrice}
+                </b>{" "}
+                บาท
               </p>
 
               <p>
                 ค่าคืนนอกเวลา:{" "}
-                <b>{returnExtraPrice}</b> บาท
+                <b>
+                  {returnExtraPrice}
+                </b>{" "}
+                บาท
               </p>
 
               <p>
                 ค่านอกเวลารวม:{" "}
-                <b>{extraPrice}</b> บาท
+                <b>
+                  {extraPrice}
+                </b>{" "}
+                บาท
               </p>
 
               <p>
                 ค่าประกัน (สมาชิก):{" "}
-                <b>{insurance}</b> บาท
+                <b>
+                  {insurance}
+                </b>{" "}
+                บาท
               </p>
 
               <hr />
 
               <h2>
-                ยอดรวมค่าเช่า: {total} บาท
+                ยอดรวมค่าเช่า:{" "}
+                {total} บาท
               </h2>
 
               <p
@@ -646,16 +865,20 @@ export default function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  display: "inline-block",
+                  display:
+                    "inline-block",
                   marginTop: 20,
                   background: "#111",
                   color: "#fff",
-                  padding: "14px 24px",
+                  padding:
+                    "14px 24px",
                   borderRadius: 12,
-                  textDecoration: "none",
+                  textDecoration:
+                    "none",
                 }}
               >
-                ส่งสรุปเข้า LINE เพื่อจอง
+                ส่งสรุปเข้า LINE
+                เพื่อจอง
               </a>
 
               <p
