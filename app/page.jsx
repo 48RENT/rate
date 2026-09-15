@@ -915,31 +915,31 @@ export default function Page() {
       LINE BUTTON
   ========================== */}
 
-   <a
-    href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
-      lineMessage
-    )}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: "block",
-      marginTop: 20,
-      background: "#06C755",
-      color: "#fff",
-      padding: "15px 24px",
-      borderRadius: 12,
-      textDecoration: "none",
-      textAlign: "center",
-      fontWeight: 700,
-      fontSize: 16,
-    }}
-  >
-    ส่งรูปเข้า LINE เพื่อจอง
-  </a>
-
+           <a
+            href={`https://line.me/R/oaMessage/@48rent/?${encodeURIComponent(
+              lineMessage
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "block",
+              marginTop: 20,
+              background: "#06C755",
+              color: "#fff",
+              padding: "15px 24px",
+              borderRadius: 12,
+              textDecoration: "none",
+              textAlign: "center",
+              fontWeight: 700,
+              fontSize: 16,
+            }}
+          >
+            ส่งรูปเข้า LINE เพื่อจอง
+          </a>
+        </div>
+      </>
+    )}
   </div>
-  </>
-)}
 </main>
-);
+  );
 }
