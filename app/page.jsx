@@ -299,37 +299,27 @@ export default function Page() {
     extraPrice;
 
   const lineMessage =
-    `สนใจเช่ากล้อง\n\n` +
-    `รุ่น: ${selected?.name || "-"}\n` +
-    `เลนส์เสริม: ${
-      selectedLens || "ไม่มี"
-    }\n\n` +
-    `วันรับกล้อง: ${
-      formatThaiDate(startDate)
-    }\n` +
-    `เวลารับกล้อง: ${
-      pickupOption.label
-    }\n\n` +
-    `วันคืนกล้อง: ${
-      formatThaiDate(endDate)
-    }\n` +
-    `เวลาคืนกล้อง: ${
-      returnOption.label
-    }\n\n` +
-    `จำนวนวันเช่า: ${rentalDays} วัน\n` +
-    `ค่ากล้อง: ${cameraPrice} บาท\n` +
-    `ค่าเลนส์เสริม: ${lensPrice} บาท\n` +
-    `ค่ารับนอกเวลา: ${
-      pickupExtraPrice
-    } บาท\n` +
-    `ค่าคืนนอกเวลา: ${
-      returnExtraPrice
-    } บาท\n` +
-    `ค่านอกเวลารวม: ${
-      extraPrice
-    } บาท\n` +
-    `ค่าประกัน: ${insurance} บาท\n\n` +
-    `ยอดรวมค่าเช่า: ${total} บาท`;
+  `รุ่นกล้อง: ${selected?.name || "-"}\n\n` +
+  `เลนส์เสริม: ${selectedLens || "ไม่มี"}\n\n` +
+  `────────────\n\n` +
+  `วันรับกล้อง: ${formatThaiDate(startDate)}\n\n` +
+  `เวลารับกล้อง: ${pickupOption.label}\n\n` +
+  `วันคืนกล้อง: ${formatThaiDate(endDate)}\n\n` +
+  `เวลาคืนกล้อง: ${returnOption.label}\n\n` +
+  `────────────\n\n` +
+  `จำนวนวันเช่า (คิดขั้นต่ำแล้ว): ${rentalDays} วัน\n\n` +
+  `ค่ากล้อง: ${cameraPrice.toLocaleString()} บาท\n\n` +
+  `ค่าเลนส์เสริม: ${lensPrice.toLocaleString()} บาท\n\n` +
+  `ค่ารับนอกเวลา: ${pickupExtraPrice.toLocaleString()} บาท\n\n` +
+  `ค่าคืนนอกเวลา: ${returnExtraPrice.toLocaleString()} บาท\n\n` +
+  `ค่านอกเวลารวม: ${extraPrice.toLocaleString()} บาท\n\n` +
+  `────────────\n\n` +
+  `สรุป\n\n` +
+  `ค่าเช่า: ${total.toLocaleString()} บาท\n` +
+  `ค่าประกัน: ${insurance.toLocaleString()} บาท\n\n` +
+  `────────────\n\n` +
+  `รวมยอดทั้งหมด: ${(total + insurance).toLocaleString()} บาท\n\n` +
+  `* ค่าประกันจะคืนเมื่อคืนกล้องเรียบร้อย และกล้องไม่เสียหาย`;
 
   return (
     <main
