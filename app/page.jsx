@@ -301,23 +301,23 @@ export default function Page() {
   const lineMessage =
   `รุ่นกล้อง: ${selected?.name || "-"}\n` +
   `เลนส์เสริม: ${selectedLens || "ไม่มี"}\n\n` +
-  `────────────\n\n` +
+  `─────────\n` +
   `วันรับกล้อง: ${formatThaiDate(startDate)}\n` +
   `เวลารับกล้อง: ${pickupOption.label}\n` +
   `วันคืนกล้อง: ${formatThaiDate(endDate)}\n` +
   `เวลาคืนกล้อง: ${returnOption.label}\n\n` +
-  `────────────\n\n` +
+  `─────────\n` +
   `จำนวนวันเช่า (คิดขั้นต่ำแล้ว): ${rentalDays} วัน\n` +
   `ค่ากล้อง: ${cameraPrice.toLocaleString()} บาท\n` +
   `ค่าเลนส์เสริม: ${lensPrice.toLocaleString()} บาท\n` +
   `ค่ารับนอกเวลา: ${pickupExtraPrice.toLocaleString()} บาท\n` +
   `ค่าคืนนอกเวลา: ${returnExtraPrice.toLocaleString()} บาท\n` +
   `ค่านอกเวลารวม: ${extraPrice.toLocaleString()} บาท\n\n` +
-  `────────────\n\n` +
+  `─────────\n` +
   `สรุป\n` +
   `ค่าเช่า: ${total.toLocaleString()} บาท\n` +
   `ค่าประกัน: ${insurance.toLocaleString()} บาท\n\n` +
-  `────────────\n\n` +
+  `─────────\n` +
   `รวมยอดทั้งหมด: ${(total + insurance).toLocaleString()} บาท\n` +
   `- ค่าประกันจะคืนเมื่อคืนกล้องเรียบร้อย และกล้องไม่เสียหาย`;
 
